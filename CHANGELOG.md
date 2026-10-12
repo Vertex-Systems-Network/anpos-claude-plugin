@@ -4,6 +4,11 @@
 
 The version stays **1.0.0 until every ANPOS option is built**; there is no separate release before that. Free and local: no subscription, licensing or entitlement code. ANPOS protocol 1.4.0.
 
+### Mock test round 1 (2026-10-12)
+- **Competitive-superiority rule** (user request during the mock test): research Stage 6 is now a deep audit (official docs, help centers, pricing, store data-safety labels, complaints, local market players). The plan must be backed by `docs/ai/COMPETITIVE-ANALYSIS.md` (feature matrix with at least two competitors, citing EVID ids; stronger / weaker / not copied). `consent propose --type plan_approval` refuses without it; projects without a market can skip it only with `--no-market-comparison "<reason>"`, which is recorded in the consent. The plan skill shows the comparison before the approval phrase.
+- Fix: `quality detect` on GitHub without `gh` login or before the repository exists now reports capabilities as unknown with the real reason instead of a misleading generic message.
+- Docs: option `priority` is an integer (plan-files reference).
+
 ### Added in build 4 (2026-10-12)
 - **Any version-control host** (`vcs detect|select|show`, new `govern` skill): the user chooses GitHub, GitLab, Bitbucket, Azure DevOps, Gitea/Forgejo, other/self-hosted or local-only. The plugin automates what the host allows and guides the rest.
 - **Branch rules ("Apply Recommended Rules")** from the upstream provider-neutral `ruleset-policy.json`, profiles `team` (1 review + code owners) and `solo` (PR + checks, no self-review deadlock). Behind `APPROVE CHANGE`; the approval itself applies them. GitHub: repository ruleset through `gh api` (no deletion, no force-push, linear history, PR, required checks); GitLab: protected branch + merge settings (+ approval rule on Premium) through `glab api`. Both are re-read and recorded as `applied_verified`, or honestly as `insufficient_permission` / `host_refused` with a guide fallback. Other hosts get an exact numbered guide in `docs/anpos/governance/RULES-<host>.md` and `rules confirm-manual` (stays unverified). Only checks that have already passed on the host become required. `rules verify` reports drift.

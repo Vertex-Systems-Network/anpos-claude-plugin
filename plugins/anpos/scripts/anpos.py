@@ -794,6 +794,30 @@ def close_pending(root: Path, ctype: str, reason: str) -> None:
         write_json(root, F_CONSENT, doc)
 
 
+F_COMPETE = "docs/ai/COMPETITIVE-ANALYSIS.md"
+
+
+def competitive_problems(root: Path) -> list[str]:
+    """What is missing from the market comparison that must back a plan (competitive-superiority rule)."""
+    path = root / F_COMPETE
+    if not path.exists():
+        return [f"{F_COMPETE} is missing: audit the main competitors and write the comparison matrix (research skill, Stages 5-6)"]
+    text = path.read_text(encoding="utf-8", errors="replace")
+    problems = []
+    widest = 0
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith("|") and line.endswith("|") and not set(line) <= set("|-: "):
+            widest = max(widest, len([c for c in line.strip("|").split("|")]))
+    if widest < 4:
+        problems.append(f"{F_COMPETE} needs a comparison table with a capability column, at least two competitors and this product")
+    known = {e.get("id") for e in read_json(root, F_EVID).get("entries", [])}
+    cited = set(re.findall(r"EVID-\d{6}", text))
+    if not cited & known:
+        problems.append(f"{F_COMPETE} must cite the research evidence it is based on (EVID-* ids from the registry)")
+    return problems
+
+
 def cmd_consent_propose(args: argparse.Namespace) -> int:
     root = find_root(args.root)
     ctype = args.type
@@ -809,6 +833,15 @@ def cmd_consent_propose(args: argparse.Namespace) -> int:
         trace = read_json(root, F_TRACE)
         if not plan.get("phases") or not plan.get("work_units") or not trace.get("links"):
             raise AnposError("a plan needs at least one requirement (traceability link), one phase and one work unit")
+        no_market = (getattr(args, "no_market_comparison", None) or "").strip()
+        if no_market:
+            changes = [f"market_comparison:not_applicable:{no_market}"] + changes
+        else:
+            problems = competitive_problems(root)
+            if problems:
+                raise AnposError("the plan must be compared with the market before approval (competitive-superiority rule):\n  - "
+                                 + "\n  - ".join(problems)
+                                 + "\nFor a project with no market (e.g. an internal tool) pass --no-market-comparison \"<reason>\".")
         changes = [f"plan_digest:sha256:{plan_digest(root)}"] + changes
         title = title or "Approve Project Plan"
         summary = summary or (f"{len(trace['links'])} requirements, {len(plan['phases'])} phases, "
@@ -2103,6 +2136,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--module", action="append")
     s.add_argument("--risk", default="unknown", choices=["low", "medium", "high", "unknown"])
     s.add_argument("--expires-hours", type=int, default=72)
+    s.add_argument("--no-market-comparison", metavar="REASON",
+                   help="plan_approval only: skip the competitor comparison for a project without a market (reason is recorded in the consent)")
     s.set_defaults(func=cmd_consent_propose)
     s = cs.add_parser("confirm", help="record the decision the user typed")
     s.add_argument("--id")

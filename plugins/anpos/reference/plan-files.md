@@ -11,7 +11,7 @@ Raw user input (verbatim, never paraphrased away) + normalized understanding: ex
 Add entries with the CLI (`evidence add`), not by hand. Required: `id, claim_or_question, source_type (primary|secondary|user|repository), source_ref, evidence_class (verified_fact|supported_inference|unknown), confidence (low|medium|high), summary, supports_requirement_ids, validation_status, supersedes, notes`. No extra keys allowed.
 
 ## `config/ai/options-bank.json` → `options[]`
-Capabilities considered. Required: `id, name, category, description, status (candidate|selected|rejected|deferred|deprecated), requirement_source[], dependencies[] (OPT ids), conflicts[] (OPT ids)`. `rationale` (non-empty string) is required when status is selected, rejected or deferred. Optional: `priority, technical_implications, ux_implications, data_implications, security_implications, qa_implications`.
+Capabilities considered. Required: `id, name, category, description, status (candidate|selected|rejected|deferred|deprecated), requirement_source[], dependencies[] (OPT ids), conflicts[] (OPT ids)`. `priority` is an integer (higher first) or null — not a word like "high". `rationale` (non-empty string) is required when status is selected, rejected or deferred. Optional: `priority, technical_implications, ux_implications, data_implications, security_implications, qa_implications`.
 
 ## `config/ai/modules-bank.json` → `modules[]`
 Required: `id, name, objective, scope[], boundaries[], dependencies[] (MOD ids), option_ids[], acceptance_criteria[], status`. Status: `not_started | ready | in_progress | blocked | needs_update | needs_removal | verification_required | complete | deferred | deprecated`. Optional: `data_entities, contracts, ui_surfaces, security_responsibilities, quality_gates, completion_evidence`.
@@ -32,6 +32,9 @@ Copy `risk_template`. `category` ∈ security, privacy, ai, product, operational
 
 ## `config/consent/consent-requests.json`
 Never edit. Managed only by `consent propose|confirm`.
+
+## `docs/ai/COMPETITIVE-ANALYSIS.md`
+Required before `consent propose --type plan_approval` (competitive-superiority rule): systems audited, a feature matrix (capability column + at least two competitors + this product, ✅/⚠️/❌/?), where we are stronger, where weaker, what we deliberately do not copy — citing `EVID-*` ids that exist in the registry. Skip only with `--no-market-comparison "<reason>"` for a project without a market.
 
 ## `docs/ai/PRE-PLAN.md`
 Human-readable plan. Fill every `TBD` section from §1 to §16, cite `EVID-*` ids, mirror the work-unit table from `execution-plan.json` (the JSON is canonical). §8 (filled at the Stage 9 stack gate), §16 (decisions get resolved over time), §17 and §18 are not part of the approved content hash; every other section is.

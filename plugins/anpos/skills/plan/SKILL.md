@@ -21,13 +21,14 @@ Only plan after intake and research. The plan must rest on: user intent, `PROJEC
 5. **Work units** — small, independently verifiable slices `WU-*` (about one PR each) with phase, module, requirement ids, dependencies, priority, acceptance criteria, required checks, allowed paths. Then back-fill `work_unit_ids` / `module_ids` / `option_ids` on each traceability link.
 6. **Risks** — material risks in `risk-register.json` with owner and mitigation.
 7. **Product hypotheses** — PRE-PLAN §6: each user/problem hypothesis, how it will be validated, KPI when measurable.
-8. **PRE-PLAN.md** — fill §1–§16, citing EVID ids, distinguishing: validated requirements · assumptions still to validate · recommended additions · removals/simplifications · market-driven requirements · differentiators · risks · unresolved decisions · phased priorities. Mirror the work-unit table (the JSON stays canonical).
+8. **Competitive superiority** — one requirement states the competitive goal (match the competitors' core, beat them on named differentiators, re-check the matrix before release); every parity gap and differentiator from `docs/ai/COMPETITIVE-ANALYSIS.md` maps to a requirement, option and work unit, or is explicitly deferred/rejected with a reason. Put a compact "best competitor today vs this product" table in PRE-PLAN §6a.
+9. **PRE-PLAN.md** — fill §1–§16, citing EVID ids, distinguishing: validated requirements · assumptions still to validate · recommended additions · removals/simplifications · market-driven requirements · differentiators · risks · unresolved decisions · phased priorities. Mirror the work-unit table (the JSON stays canonical).
 
 For a large plan write it in passes (requirements → options/modules → phases/work units → PRE-PLAN), running `anpos validate` after each pass. Fix every ERROR; read every WARN and fix the ones that are real gaps (requirement without work unit, work unit without acceptance criteria, module in no phase).
 
 ## Approval gate — "Approve Project Plan"
-1. `anpos consent propose --type plan_approval` → prints `consent_id`, `approve_phrase` (e.g. `APPROVE PLAN 3F9A1C2B`) and `reject_phrase`.
-2. Present a compact summary in chat: objective, scope in/out, requirements count, modules, phases with their work units, key risks, unresolved decisions, and the main changes versus the user's original idea. Point to `docs/ai/PRE-PLAN.md` for detail.
+1. `anpos consent propose --type plan_approval` (refuses without the market comparison — see the research skill) → prints `consent_id`, `approve_phrase` (e.g. `APPROVE PLAN 3F9A1C2B`) and `reject_phrase`.
+2. Present a compact summary in chat: objective, scope in/out, requirements count, modules, phases with their work units, key risks, unresolved decisions, and the main changes versus the user's original idea. **Then show the comparison** (a table of key capabilities: main competitors vs this plan, with where we are weaker stated honestly) before the approval phrase. Point to `docs/ai/PRE-PLAN.md` and `docs/ai/COMPETITIVE-ANALYSIS.md` for detail.
 3. Ask the user to type the approve phrase exactly, or the reject phrase, or describe changes (**Review Plan**). Never type the phrase yourself, never pre-fill it as their answer.
 4. When they reply:
    - phrase typed → `anpos consent confirm`. On approval, update PRE-PLAN §17 (status approved, consent id, date) and `PROJECT-IDEA.md` Planning Status `COMPLETE`.

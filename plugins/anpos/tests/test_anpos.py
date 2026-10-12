@@ -71,6 +71,23 @@ def write_plan(root: Path) -> None:
          "work_unit_ids": ["WU-TASK-1"], "status": "planned", "verification_status": "unverified"},
     ]
     save(root, "config/traceability/requirements-traceability.json", trace)
+    write_competitive(root)
+
+
+COMPETITIVE_MD = """# Competitive Analysis
+
+| Capability | Competitor A | Competitor B | This product |
+|---|---|---|---|
+| Login | ✅ | ⚠️ paid | ✅ REQ-001 (EVID-000001) |
+"""
+
+
+def write_competitive(root: Path) -> None:
+    if not load(root, "config/research/evidence-registry.json").get("entries"):
+        run(root, "evidence", "add", "--claim", "Competitors offer login", "--source-type", "secondary", "--source-ref", "https://example.com",
+            "--class", "supported_inference", "--confidence", "low", "--summary", "test evidence")
+    (root / "docs/ai").mkdir(parents=True, exist_ok=True)
+    (root / "docs/ai/COMPETITIVE-ANALYSIS.md").write_text(COMPETITIVE_MD)
 
 
 @pytest.fixture()
@@ -203,6 +220,23 @@ def test_validation_catches_broken_refs_and_cycles(repo: Path) -> None:
     out = run(repo, "validate", ok=False).stdout
     assert "dependency cycle" in out and "REQ-404" in out
     assert run(repo, "consent", "propose", "--type", "plan_approval", ok=False).returncode == 1
+
+
+def test_plan_needs_market_comparison(repo: Path) -> None:
+    write_plan(repo)
+    comp = repo / "docs/ai/COMPETITIVE-ANALYSIS.md"
+    comp.unlink()
+    err = run(repo, "consent", "propose", "--type", "plan_approval", ok=False).stderr
+    assert "competitive-superiority" in err and "COMPETITIVE-ANALYSIS.md is missing" in err
+    comp.write_text("# Competitors\n\n| Capability | Us |\n|---|---|\n| Login | ✅ |\n")
+    err = run(repo, "consent", "propose", "--type", "plan_approval", ok=False).stderr
+    assert "at least two competitors" in err and "must cite" in err
+    write_competitive(repo)
+    assert json.loads(run(repo, "consent", "propose", "--type", "plan_approval").stdout)["approve_phrase"].startswith("APPROVE PLAN")
+    comp.unlink()
+    out = json.loads(run(repo, "consent", "propose", "--type", "plan_approval", "--no-market-comparison", "internal admin tool").stdout)
+    record = [r for r in load(repo, "config/consent/consent-requests.json")["requests"] if r["id"] == out["consent_id"]][0]
+    assert "market_comparison:not_applicable:internal admin tool" in record["proposed_changes"]
 
 
 def test_guard_blocks_self_approval(repo: Path) -> None:

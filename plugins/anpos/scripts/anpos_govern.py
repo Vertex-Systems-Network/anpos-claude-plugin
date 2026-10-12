@@ -571,12 +571,24 @@ def cmd_quality(args: argparse.Namespace) -> int:
     host = state["host"]
     if args.quality_cmd == "detect":
         result: dict[str, Any] = {"host": host}
-        if host == "github" and cli_ready("gh")[0]:
-            info = gh_json(f"repos/{state['repository']}")
-            public = not info.get("private", True)
-            ghas = ((info.get("security_and_analysis") or {}).get("advanced_security") or {}).get("status") == "enabled"
-            result["capabilities"] = {"codeql": public or ghas, "dependency-review": public or ghas, "scorecard": public}
-            result["basis"] = f"visibility {'public' if public else 'private'}, advanced security {'on' if ghas else 'off'}"
+        if host == "github":
+            ready, why = cli_ready("gh")
+            info = None
+            if ready:
+                try:
+                    info = gh_json(f"repos/{state['repository']}")
+                except AnposError as exc:
+                    why = f"repository {state['repository']} not readable on GitHub yet ({str(exc)[-120:]})"
+            if info is not None:
+                public = not info.get("private", True)
+                ghas = ((info.get("security_and_analysis") or {}).get("advanced_security") or {}).get("status") == "enabled"
+                result["capabilities"] = {"codeql": public or ghas, "dependency-review": public or ghas, "scorecard": public}
+                result["basis"] = f"visibility {'public' if public else 'private'}, advanced security {'on' if ghas else 'off'}"
+            else:
+                result["capabilities"] = {"codeql": "unknown", "dependency-review": "unknown", "scorecard": "unknown"}
+                result["basis"] = (f"not detected: {why}. Create/push the repository and log in with `gh auth login`, "
+                                   "then run `quality detect` again. The ANPOS validator workflow from the template "
+                                   "is already present.")
         elif host == "gitlab":
             result["capabilities"] = {"gitlab-sast": True, "gitlab-dependency-scanning": "Ultimate tier only"}
             result["basis"] = "GitLab SAST template is available on all tiers"

@@ -190,6 +190,10 @@ Shart: Full ANPOS mode.
 **Karein:** stack approve hone se pehle "watch on karo"; baad mein dobara. Phir "scout on karo".
 **Expected:** pehli baar mana (stack approved nahi); baad mein on. Scout ke liye `APPROVE CHANGE` phrase.
 
+### Scenario 38 — Competitors se behtar plan
+**Karein:** plan banne ke baad kahein "competitors ko deep study karo aur un se behtar system banao", ya `docs/ai/COMPETITIVE-ANALYSIS.md` delete karke plan approve karwane ki koshish karein.
+**Expected:** Claude official sites, help centers, pricing aur reviews padh kar `EVID-*` record karta hai, `docs/ai/COMPETITIVE-ANALYSIS.md` mein matrix banata hai, plan mein parity aur differentiator requirements jodta hai, aur approval phrase se pehle comparison table dikhata hai. File na ho to `consent propose` mana karta hai.
+
 ---
 
 ## Report karte waqt

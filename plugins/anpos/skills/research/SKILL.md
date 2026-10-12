@@ -23,8 +23,15 @@ Test assumptions against evidence; find missing pieces, contradictions, hidden d
 ## Stage 5 — Compare with the market
 Against direct/indirect competitors, category leaders, newer products, open-source substitutes: features and journeys, positioning, pricing, onboarding, integrations, platforms, trust/privacy/compliance/accessibility, recurring complaints. Say where the idea is stronger, weaker, undifferentiated, missing something important, or over-complicated.
 
-## Stage 6 — Audit comparable systems
-For the 2–4 most relevant systems: scope/users/jobs-to-be-done, feature and information architecture, key flows, roles/permissions, integrations, pricing, data/privacy/security signals, reliability, complaints, strengths to learn from, weaknesses to avoid, reusable decisions. Clearly separate verified evidence, reasonable inference, and unknown/private details.
+## Stage 6 — Audit comparable systems (deep)
+For the 2–4 most relevant systems **plus the local players in the user's target market**: scope/users/jobs-to-be-done, feature and information architecture, key flows, roles/permissions, integrations, pricing and fees, data/privacy/security signals (privacy policy, store data-safety labels), reliability, recurring complaints (store reviews, help-center troubleshooting pages), strengths to learn from, weaknesses to avoid, reusable decisions. Read primary sources (official site, help center/docs, pricing page, store listing) — not just search snippets. Clearly separate verified evidence, reasonable inference, and unknown/private details. For a large audit, split competitors across parallel subagents and record their findings yourself.
+
+## Competitive-superiority rule (mandatory before plan approval)
+The goal is a system that **matches the competitors' core and beats them on clear differentiators** — not a copy. Write `docs/ai/COMPETITIVE-ANALYSIS.md`:
+1. Systems audited — type, scale as stated by the source, business model, EVID ids.
+2. Feature matrix — rows = capabilities, columns = each competitor + this product (✅ has · ⚠️ partial/paid/limited · ❌ missing · ? unknown), citing EVID ids.
+3. Where we are stronger (differentiators) · 4. Where we are weaker or at risk · 5. What we deliberately do not copy (with reasons).
+Every parity gap or differentiator becomes a requirement/option in the plan. `consent propose --type plan_approval` refuses without this file (a comparison table with at least two competitors and EVID citations). Only a project with genuinely no market (e.g. an internal tool) may skip it with `--no-market-comparison "<reason>"`, which is recorded in the consent.
 
 ## Recording evidence (mandatory)
 Every material finding becomes an entry — one claim per entry:
@@ -42,5 +49,5 @@ anpos evidence add --claim "<claim or question>" --source-type primary|secondary
 
 ## Exit
 - Update `PROJECT-IDEA.md`: Research Status `COMPLETE`, refresh open questions/risks.
-- Give the user a short research brief (in chat): top findings with EVID ids, market position, recommended additions/removals, open decisions.
+- Give the user a short research brief (in chat): top findings with EVID ids, market position, the comparison summary (where we win / lose), recommended additions/removals, open decisions.
 - `anpos validate`, then `anpos stage planning` and continue with the **plan** skill.

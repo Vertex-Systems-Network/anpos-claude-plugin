@@ -15,7 +15,7 @@ Run with `sh <plugin>/scripts/anpos.sh [--root DIR] <command>` (finds Python 3.9
 | Command | What it does |
 |---|---|
 | `evidence add --claim … --source-type … --source-ref … --class … --confidence … --summary … [--title --publisher --published-at --req REQ-001 --opt OPT-X --mod MOD-X --note …]` | Appends the next `EVID-*` entry and prints its id |
-| `consent propose --type plan_approval` | Validates, hashes the plan, creates a pending consent, sets plan `proposed`. Prints `approve_phrase` |
+| `consent propose --type plan_approval [--no-market-comparison REASON]` | Validates, requires `docs/ai/COMPETITIVE-ANALYSIS.md` (comparison table with ≥2 competitors citing EVID ids) unless skipped with a recorded reason, hashes the plan, creates a pending consent, sets plan `proposed`. Prints `approve_phrase` |
 | `consent confirm [--id CONSENT-…]` | Records the decision the user typed (captured by the hook) |
 | `export --format md\|csv\|issues [--output FILE] [--only-open]` | Work units as a readable plan, CSV, or GitHub-issue JSON |
 
