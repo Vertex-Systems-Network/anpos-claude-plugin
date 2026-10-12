@@ -1087,6 +1087,11 @@ def cmd_consent_confirm(args: argparse.Namespace) -> int:
             plan["plan_approval_ref"] = None
             set_stage(root, "planning")
         write_json(root, F_PLAN, plan)
+        state = read_json(root, F_STATE)
+        state["progress"] = compute_progress(plan)
+        ready = ready_units(plan) if decision == "approved" else []
+        state["next_valid_work_unit"] = ready[0]["id"] if ready else None
+        write_json(root, F_STATE, state)
     elif record.get("type") == "technology_stack":
         current = read_json(root, F_STATE).get("lifecycle_stage")
         if current == "technology_consent":

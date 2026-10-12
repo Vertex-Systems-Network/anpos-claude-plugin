@@ -9,6 +9,7 @@ The version stays **1.0.0 until every ANPOS option is built**; there is no separ
 - Fix: `quality detect` on GitHub without `gh` login or before the repository exists now reports capabilities as unknown with the real reason instead of a misleading generic message.
 - Docs: option `priority` is an integer (plan-files reference).
 - **Fix (found when the user typed `APPROVE PLAN …`):** the approval hook only looked in the folder the Claude Code session was opened in, so a project in a subfolder silently lost the user's approval. `consent propose` now leaves a pointer (code → project, in `~/.claude/anpos/pending/`, removed on decision) and the hook also checks parent folders; a project is chosen only if it really has a pending request with that code. Still silent outside ANPOS projects.
+- Fix: approving or rejecting the plan refreshes the project-state progress, so `validate` no longer warns "progress is out of date" right after approval.
 
 ### Added in build 4 (2026-10-12)
 - **Any version-control host** (`vcs detect|select|show`, new `govern` skill): the user chooses GitHub, GitLab, Bitbucket, Azure DevOps, Gitea/Forgejo, other/self-hosted or local-only. The plugin automates what the host allows and guides the rest.

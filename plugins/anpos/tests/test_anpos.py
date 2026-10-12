@@ -232,6 +232,8 @@ def test_approval_captured_when_session_opened_in_parent_folder(repo: Path, tmp_
     assert "captured" in res.stdout, res.stdout
     run(repo, "consent", "confirm")
     assert load(repo, "config/ai/execution-plan.json")["plan_status"] == "approved"
+    assert "out of date" not in run(repo, "validate").stdout  # progress refreshed on approval
+    assert not any(Path(os.environ["ANPOS_POINTER_HOME"]).iterdir())  # pointer removed after the decision
     # an unknown code typed in an unrelated folder changes nothing and stays silent
     elsewhere = tmp_path_factory.mktemp("not-a-project")
     res = subprocess.run([sys.executable, str(CAPTURE)], input=json.dumps({"prompt": "APPROVE PLAN DEADBEEF", "cwd": str(elsewhere)}),
