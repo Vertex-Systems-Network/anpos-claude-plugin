@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "instance_status": "template_source",
+  "instance_id": null,
+  "project_name": "AI Native Project Operating System",
+  "repository": "Vertex-Systems-Network/ai-native-project-operating-system",
+  "repository_owner": "Vertex-Systems-Network",
+  "initialized_at": null,
+  "initialized_by": null,
+  "source_protocol_version": "1.4.0",
+  "source_template_repository": "Vertex-Systems-Network/ai-native-project-operating-system",
+  "bootstrap_completed": false,
+  "notes": "Canonical inert template source. Child repositories copied from this source must detect their different repository identity and run scripts/bootstrap_child.py before development; it strips the vendor-only paths listed in config/licensing/vendor-source-boundary.json. Release history lives in docs/releases/ and README.md, not in this identity file."
+}

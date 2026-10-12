@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anpos.local/schemas/project-state.schema.json",
+  "title": "ANPOS Project State",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "lifecycle_stage",
+    "progress",
+    "outstanding_updates",
+    "outstanding_removals",
+    "unresolved_decisions",
+    "critical_defects"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lifecycle_stage": {
+      "enum": [
+        "not_started",
+        "initialization",
+        "intake",
+        "research",
+        "planning",
+        "plan_proposed",
+        "plan_approved",
+        "system_design",
+        "technology_consent",
+        "architecture",
+        "data_flow",
+        "ui_ux",
+        "development",
+        "sqa",
+        "security",
+        "release",
+        "operations",
+        "maintenance"
+      ]
+    },
+    "current_phase": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^PHASE-[A-Z0-9][A-Z0-9-]*$"
+    },
+    "current_module": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^MOD-[A-Z0-9][A-Z0-9-]*$"
+    },
+    "current_work_unit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^WU-[A-Z0-9][A-Z0-9-]*$"
+    },
+    "progress": {
+      "type": "object"
+    },
+    "outstanding_updates": {
+      "type": "array"
+    },
+    "outstanding_removals": {
+      "type": "array"
+    },
+    "unresolved_decisions": {
+      "type": "array"
+    },
+    "critical_defects": {
+      "type": "array"
+    },
+    "last_reconciled_repository_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "last_reconciled_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_valid_work_unit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^WU-[A-Z0-9][A-Z0-9-]*$"
+    }
+  },
+  "additionalProperties": true
+}

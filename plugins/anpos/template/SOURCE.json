@@ -1,0 +1,8 @@
+{
+  "upstream_repository": "Vertex-Systems-Network/ai-native-project-operating-system",
+  "upstream_commit": "56b586b707d57a2e8e757f55e32707d277718466",
+  "protocol_version": "1.4.0",
+  "file_count": 226,
+  "content_sha256": "02d7484dbe436d21edfa5600b9a31196c58d81e543f5a7b2189ae7bc64a5d378",
+  "excluded": "vendor_only_paths from config/licensing/vendor-source-boundary.json, .git, caches"
+}

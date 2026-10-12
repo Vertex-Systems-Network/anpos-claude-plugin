@@ -1,0 +1,16 @@
+{
+  "name": "anpos-marketplace",
+  "owner": {
+    "name": "Vertex Systems Network"
+  },
+  "metadata": {
+    "description": "ANPOS plugins for Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "anpos",
+      "source": "./plugins/anpos",
+      "description": "AI-native project planner with evidence-backed research, modular plans and human approval gates."
+    }
+  ]
+}

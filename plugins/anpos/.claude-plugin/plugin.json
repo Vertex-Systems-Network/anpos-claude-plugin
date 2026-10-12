@@ -1,0 +1,11 @@
+{
+  "name": "anpos",
+  "displayName": "ANPOS Planner",
+  "version": "1.0.0",
+  "description": "AI-native project planner: intake, evidence-backed research, market comparison, modular plan with phases and work units, and human approval gates (ANPOS 1.4.0 Stages 1-9). Free, local, no subscription.",
+  "author": {
+    "name": "Vertex Systems Network"
+  },
+  "repository": "https://github.com/Vertex-Systems-Network/ai-native-project-operating-system",
+  "keywords": ["planning", "project-management", "ai-native", "anpos", "requirements", "roadmap"]
+}
