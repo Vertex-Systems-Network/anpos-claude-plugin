@@ -222,6 +222,23 @@ def test_validation_catches_broken_refs_and_cycles(repo: Path) -> None:
     assert run(repo, "consent", "propose", "--type", "plan_approval", ok=False).returncode == 1
 
 
+def test_approval_captured_when_session_opened_in_parent_folder(repo: Path, tmp_path_factory: pytest.TempPathFactory) -> None:
+    write_plan(repo)
+    out = json.loads(run(repo, "consent", "propose", "--type", "plan_approval").stdout)
+    session_dir = repo.parent  # the Claude Code session was opened one level above the project
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(session_dir))
+    res = subprocess.run([sys.executable, str(CAPTURE)], input=json.dumps(
+        {"prompt": out["approve_phrase"], "session_id": "s9", "cwd": str(session_dir)}), capture_output=True, text=True, env=env)
+    assert "captured" in res.stdout, res.stdout
+    run(repo, "consent", "confirm")
+    assert load(repo, "config/ai/execution-plan.json")["plan_status"] == "approved"
+    # an unknown code typed in an unrelated folder changes nothing and stays silent
+    elsewhere = tmp_path_factory.mktemp("not-a-project")
+    res = subprocess.run([sys.executable, str(CAPTURE)], input=json.dumps({"prompt": "APPROVE PLAN DEADBEEF", "cwd": str(elsewhere)}),
+                         capture_output=True, text=True, env=dict(os.environ, CLAUDE_PROJECT_DIR=str(elsewhere)))
+    assert res.stdout == "" and not (elsewhere / ".anpos").exists()
+
+
 def test_plan_needs_market_comparison(repo: Path) -> None:
     write_plan(repo)
     comp = repo / "docs/ai/COMPETITIVE-ANALYSIS.md"

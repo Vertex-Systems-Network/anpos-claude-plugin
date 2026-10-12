@@ -782,6 +782,30 @@ def approval_code(record: dict[str, Any]) -> str:
     return str(record.get("nonce", "")).replace("-", "")[:8].upper()
 
 
+def pointer_dir() -> Path:
+    """Where pending approval codes point to their project, so the approval hook finds the project even when the
+    Claude Code session was opened in another folder (e.g. a parent directory)."""
+    return Path(os.environ.get("ANPOS_POINTER_HOME") or (Path.home() / ".claude" / "anpos" / "pending"))
+
+
+def write_pointer(root: Path, record: dict[str, Any]) -> None:
+    try:
+        folder = pointer_dir()
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / f"{approval_code(record)}.json").write_text(json.dumps(
+            {"code": approval_code(record), "root": str(root.resolve()), "consent_id": record.get("id"),
+             "expires_at": record.get("expires_at")}) + "\n", encoding="utf-8")
+    except OSError:
+        pass  # best effort: the hook still checks the session folder first
+
+
+def drop_pointer(record: dict[str, Any]) -> None:
+    try:
+        (pointer_dir() / f"{approval_code(record)}.json").unlink()
+    except OSError:
+        pass
+
+
 def close_pending(root: Path, ctype: str, reason: str) -> None:
     doc = read_json(root, F_CONSENT)
     changed = False
@@ -789,6 +813,7 @@ def close_pending(root: Path, ctype: str, reason: str) -> None:
         if req.get("type") == ctype and req.get("status") == "pending":
             req["status"] = "closed"
             req["implementation_reference"] = f"closed: {reason}"
+            drop_pointer(req)
             changed = True
     if changed:
         write_json(root, F_CONSENT, doc)
@@ -932,6 +957,7 @@ def cmd_consent_propose(args: argparse.Namespace) -> int:
 
     kind = CONSENT_KIND.get(ctype, "CHANGE")
     code = approval_code(record)
+    write_pointer(root, record)
     issue_url = None
     if (root / "config/integrations/vcs-host.json").exists():
         import anpos_govern
@@ -1041,6 +1067,7 @@ def cmd_consent_confirm(args: argparse.Namespace) -> int:
         write_json(root, token_rel, token)
 
     record["status"] = decision
+    drop_pointer(record)
     record["approved_scope"] = list(record.get("proposed_changes", [])) if decision == "approved" else []
     record["decision_at"] = iso(decided)
     record["decision_request_hash"] = calculated
